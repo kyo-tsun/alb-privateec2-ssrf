@@ -19,40 +19,7 @@ This CDK project demonstrates SSRF (Server-Side Request Forgery) vulnerability a
 - Vulnerable PHP script for SSRF testing
 - SSM endpoints for remote access
 
-```mermaid
-flowchart LR
-  Internet
-  
-  subgraph aws["AWS Account"]
-    subgraph VPC["VPC (10.0.0.0/16)"]
-      subgraph publicsubnet
-        ALB@{img: "https://api.iconify.design/logos/aws-elb.svg", label: "Application Load Balancer", pos: "b", w: 60, h: 60, constraint: "on"}
-
-        NAT@{img: "https://api.iconify.design/logos/aws-vpc.svg", label: "NAT Gateway", pos: "b", w: 60, h: 60, constraint: "on"}
-      end
-        
-      subgraph privatesubnet
-        EC2@{img: "https://api.iconify.design/logos/aws-ec2.svg", label: "Instance<br>IMDSv1 Enabled<br>Vulnerable PHP", pos: "b", w: 60, h: 60, constraint: "on"}
-
-        SSM_EP@{img: "https://api.iconify.design/logos/aws-systems-manager.svg", label: "SSM VPC Endpoints", pos: "b", w: 60, h: 60, constraint: "on"}
-      end
-    end
-    
-    S3@{img: "https://api.iconify.design/logos/aws-s3.svg", label: "Bucket<br>secret.txt", pos: "b", w: 60, h: 60, constraint: "on"}
-  end
-  
-  Internet ~~~ publicsubnet ~~~ privatesubnet
-  
-  Internet --> ALB
-  ALB --> EC2
-  EC2 --> S3
-  EC2 -.-> SSM_EP <-.-> admin
-  
-  class VPC vpc
-  
-  classDef group fill:none,stroke:none
-```
-
+![Architecture](draw/architecture.png)
 
 ## Prerequisites
 
