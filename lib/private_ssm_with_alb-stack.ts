@@ -4,10 +4,21 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
 export class PrivateSsmWithAlbStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    //define s3 bucket
+    const bucket = new s3.Bucket(this, "Bucket", {
+    });
+
+    new s3deploy.BucketDeployment(this, "DeployInternalBucket", {
+      sources: [s3deploy.Source.asset("./object")],
+      destinationBucket: bucket
+    });
 
     //define vpc with NAT Gateway
     const vpc = new ec2.Vpc(this, "PrivateSsmWithAlbVpc", {
@@ -39,6 +50,18 @@ export class PrivateSsmWithAlbStack extends Stack {
     
     // Allow ALB to communicate with EC2
     albSecurityGroup.connections.allowTo(instanceSecurityGroup, ec2.Port.tcp(80));
+
+    //define iam role for ec2
+    const instanceRole = new iam.Role(this, "InstanceRole", {
+      assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore")
+      ]
+    });
+
+    //上記で作成したS3バケットへのアクセスを許可
+    bucket.grantReadWrite(instanceRole);
+
 
     //define user data for web server with vulnerable SSRF endpoint
     const userData = ec2.UserData.forLinux();
@@ -72,6 +95,7 @@ export class PrivateSsmWithAlbStack extends Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 }),
       securityGroup: instanceSecurityGroup,
+      role: instanceRole,
       instanceName: "PrivateSsmInstance",
       requireImdsv2: false,
       userData: userData
@@ -86,8 +110,8 @@ export class PrivateSsmWithAlbStack extends Stack {
       instanceMetadataTags: 'disabled'
     };
 
-    //define ssm
-    instance.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSSMManagedInstanceCore"));
+    
+
 
     //define security group for vpc endpoint
     const endpointSecurityGroup = new ec2.SecurityGroup(this, "PrivateSsmEndpointSecurityGroup", {
