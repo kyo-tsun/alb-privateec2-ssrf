@@ -19,6 +19,36 @@ This CDK project demonstrates SSRF (Server-Side Request Forgery) vulnerability a
 - Vulnerable PHP script for SSRF testing
 - SSM endpoints for remote access
 
+```mermaid
+graph TB
+    Internet[Internet] --> ALB[Application Load Balancer<br/>]
+    ALB --> EC2[EC2 Instance<br/>IMDSv1 Enabled<br/>Vulnerable PHP Script]
+    EC2 --> IMDS[Instance Metadata Service<br/>169.254.169.254]
+    EC2 --> S3[S3 Bucket<br/>secret.txt]
+    
+    subgraph AWS[AWS Account]
+      VPC
+      S3
+      IMDS
+      subgraph VPC["VPC (10.0.0.0/16)"]
+          subgraph PublicSubnet["Public Subnet"]
+              ALB
+              NAT[NAT Gateway]
+          end
+          
+          subgraph PrivateSubnet["Private Subnet"]
+              EC2
+              SSM_EP[SSM VPC Endpoints]
+          end
+      end
+    end
+    
+    EC2 <-.-> SSM_EP <-.-> admin
+    EC2 --> NAT
+    NAT --> Internet
+```
+
+
 ## Prerequisites
 
 - AWS CLI configured
