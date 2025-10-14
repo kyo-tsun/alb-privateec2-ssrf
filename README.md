@@ -20,32 +20,37 @@ This CDK project demonstrates SSRF (Server-Side Request Forgery) vulnerability a
 - SSM endpoints for remote access
 
 ```mermaid
-graph TB
-    Internet[Internet] --> ALB[Application Load Balancer<br/>]
-    ALB --> EC2[EC2 Instance<br/>IMDSv1 Enabled<br/>Vulnerable PHP Script]
-    EC2 --> IMDS[Instance Metadata Service<br/>169.254.169.254]
-    EC2 --> S3[S3 Bucket<br/>secret.txt]
-    
-    subgraph AWS[AWS Account]
-      VPC
-      S3
-      IMDS
-      subgraph VPC["VPC (10.0.0.0/16)"]
-          subgraph PublicSubnet["Public Subnet"]
-              ALB
-              NAT[NAT Gateway]
-          end
-          
-          subgraph PrivateSubnet["Private Subnet"]
-              EC2
-              SSM_EP[SSM VPC Endpoints]
-          end
+flowchart LR
+  Internet
+  
+  subgraph aws["AWS Account"]
+    subgraph VPC["VPC (10.0.0.0/16)"]
+      subgraph publicsubnet
+        ALB@{img: "https://api.iconify.design/logos/aws-elb.svg", label: "Application Load Balancer", pos: "b", w: 60, h: 60, constraint: "on"}
+
+        NAT@{img: "https://api.iconify.design/logos/aws-vpc.svg", label: "NAT Gateway", pos: "b", w: 60, h: 60, constraint: "on"}
+      end
+        
+      subgraph privatesubnet
+        EC2@{img: "https://api.iconify.design/logos/aws-ec2.svg", label: "Instance<br>IMDSv1 Enabled<br>Vulnerable PHP", pos: "b", w: 60, h: 60, constraint: "on"}
+
+        SSM_EP@{img: "https://api.iconify.design/logos/aws-systems-manager.svg", label: "SSM VPC Endpoints", pos: "b", w: 60, h: 60, constraint: "on"}
       end
     end
     
-    EC2 <-.-> SSM_EP <-.-> admin
-    EC2 --> NAT
-    NAT --> Internet
+    S3@{img: "https://api.iconify.design/logos/aws-s3.svg", label: "Bucket<br>secret.txt", pos: "b", w: 60, h: 60, constraint: "on"}
+  end
+  
+  Internet ~~~ publicsubnet ~~~ privatesubnet
+  
+  Internet --> ALB
+  ALB --> EC2
+  EC2 --> S3
+  EC2 -.-> SSM_EP <-.-> admin
+  
+  class VPC vpc
+  
+  classDef group fill:none,stroke:none
 ```
 
 
