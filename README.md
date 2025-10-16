@@ -30,6 +30,8 @@ This CDK project demonstrates SSRF (Server-Side Request Forgery) vulnerability a
 ## Deployment
 
 ```bash
+git clone https://github.com/kyo-tsun/alb-privateec2-ssrf.git
+cd alb-privateec2-ssrf
 npm install
 cdk bootstrap
 cdk deploy
