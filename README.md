@@ -62,16 +62,3 @@ To secure this setup:
 2. Remove the vulnerable PHP script
 3. Implement proper input validation
 4. Use WAF to block malicious requests
-
-
-| Q | W |
-|---|---|
-| 1 |||
-| 2 ||
-| 3 | b |
-
-|header1|header2|header3|
-|:------|:-----:|------:|
-|hoge   |fuga   |piyo   |
-|hoge   |^      |^      |
-|hoge   |fuga   |^      |
