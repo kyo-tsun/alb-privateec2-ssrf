@@ -63,7 +63,6 @@ To secure this setup:
 3. Implement proper input validation
 4. Use WAF to block malicious requests
 
-
 |№|色|値|
 |:-:|:-:|:-:|
 |1<td bgcolor=white>white|#ffffff|
