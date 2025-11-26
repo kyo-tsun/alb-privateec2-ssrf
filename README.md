@@ -20,6 +20,7 @@ This CDK project demonstrates SSRF (Server-Side Request Forgery) vulnerability a
 - SSM endpoints for remote access
 
 ![Architecture](draw/architecture.png)
+*アーキテクチャ*
 
 ## Prerequisites
 
@@ -62,9 +63,3 @@ To secure this setup:
 2. Remove the vulnerable PHP script
 3. Implement proper input validation
 4. Use WAF to block malicious requests
-
-|列1|列2|列3|列4|
-|---|---|---|---|
-|データ1|データ2|データ3|データ4|
-|データ5<td bgcolor=red>red<td bgcolor=red>red<td bgcolor=red>red|
-|データ9|データ10|データ11|データ12|
