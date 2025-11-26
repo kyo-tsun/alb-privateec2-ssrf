@@ -20,7 +20,7 @@ This CDK project demonstrates SSRF (Server-Side Request Forgery) vulnerability a
 - SSM endpoints for remote access
 
 ![Architecture](draw/architecture.png)
-*アーキテクチャ*
+<center>*アーキテクチャ*</center>
 
 ## Prerequisites
 
